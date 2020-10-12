@@ -1,38 +1,91 @@
-# t em meses
-simulator <- function(entrada, aporte, t, juros){
-  t <- t*12
-  M <- entrada*(1 + juros)^t + aporte*(((1 + juros)^t) - 1)/juros
-  economia <- entrada + t*aporte
-  dif <- M - economia
+# Libraries ----
+library(dplyr)
+
+# Auxiliary ----
+get_formula <- function(x){
   
-  cat("Montante:", M)
-  cat("\nJuntou no total:", economia)
-  cat("\nQuanto rendeu acima do que juntou:", dif)
-  cat("\nRentabilidade de:", 100*dif/economia)
+  final <- start*(1 + var)^months + mc*(((1 + var)^months) - 1)/var
   
-  #tibble(Montante = M, Economia = Economia, Diferenca = Dif)
+  start <- function(final, mc, var, months){
+    (final - mc*(((1 + var)^months) - 1)/var)/((1+var)^months)
+  }
+  
+  mc <- function(final, start, var, months){
+    (final - start*(1 + var)^months)/((((1 + var)^months) - 1)/var)
+  }
+  
+}
+final <- start*(1 + var)^months + mc*(((1 + var)^months) - 1)/var
+start <- (final - mc*(((1 + var)^months) - 1)/var)/((1+var)^months)
+
+
+params = list(start = 1000,
+              years = NULL,
+              monthly_contribution = 100,
+              var = NULL,
+              total_money = 1000)
+
+simulator(params)
+simulator <- function(params){
+  
+  qtd_input <- params %>%
+    purrr::map(~length(.)) %>%
+    unlist() %>%
+    sum()
+  
+  # Other conditions: total_money > start, mc ... all > 0
+  # Check if has at least 3 inputs
+  if(qtd_input < 3){
+    msg <- "Por favor, preencha pelo menos três campos."
+    return(list(value = msg, 
+                status = "erro"))
+    
+    # Check if the relation isn't Anos vs Rentabilidade
+  } else if(is.null(params[['var']]) & is.null(params[['years']])){
+    msg <- "Por favor, não deixe Anos e Rentabilidade em branco ao mesmo tempo."
+    return(list(value = msg, 
+                status = "erro"))
+    
+    # Check if the single simulate isn't Anos
+  } else if(qtd_input == 4 & is.null(params[['years']])){
+    msg <- "Por favor, não deixe apenas o campo Anos em branco."
+    return(list(value = msg, 
+                status = "erro"))
+    
+    # Check if the single simulate isn't Rentabilidade
+  } else if(qtd_input == 4 & is.null(params[['var']])){
+    msg <- "Por favor, não deixe apenas o campo Rentabilidade em branco."
+    return(list(value = msg, status = "erro"))
+    
+  }else{
+    start = params[['start']]
+    months = 12*params[['years']]
+    mc = params[['monthly_contribution']]
+    var = params[['var']]
+    final = params[['total_money']]
+    
+    final <- start*(1 + var)^months + mc*(((1 + var)^months) - 1)/var
+    
+    return(list(value = final, status = "single_simulate"))
+  }
 }
 
-simulator(entrada = 2000,
-          aporte = 0,
-          t = 1, # em anos
-          juros = 0.005) # ao mês
 
+# Tempo > Rentabilidade > Entrada > Aporte > Montante 
 
+# 1. Montante
+# 2. Aporte
+# 3. Entrada
 
+# 1. Tempo vs Aporte
+# 2. Tempo vs Entrada
+# 3. Tempo vs Montante
 
-# Gráfico:
-# Eixo X: 
+# 4. Rentabilidade vs Aporte
+# 5. Rentabilidade vs Entrada
+# 6. Rentabilidade vs Montante
 
+# 7. Entrada vs Aporte
+# 8. Entrada vs Montante
 
-# - Tempo
-# - Aporte
-# - Rentabilidade
-# - Montante
-
-
-# Tempo vs Aporte         (Fixado Rentabilidade e Montante)
-# Tempo vs Rentabilidade  (Fixado Aporte e Montante)
-# Tempo vs Montante       (Fixado Aporte e Rentabilidade)
-
-#
+# 9. Aporte vs Montante
