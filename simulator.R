@@ -2,30 +2,52 @@
 library(dplyr)
 
 # Auxiliary ----
-get_formula <- function(x){
-  
-  final <- start*(1 + var)^months + mc*(((1 + var)^months) - 1)/var
-  
-  start <- function(final, mc, var, months){
-    (final - mc*(((1 + var)^months) - 1)/var)/((1+var)^months)
+get_formula <- function(params){
+  # Check which inputs are null
+  null_input <- c()
+  for(input in names(params)){
+    if(is.null(params[[input]])){
+      null_input <- append(null_input, input)
+    }
   }
   
-  mc <- function(final, start, var, months){
-    (final - start*(1 + var)^months)/((((1 + var)^months) - 1)/var)
-  }
+  # Total money expression
+  if("total_money" %in% null_input){
+    simulate_formula <- function(var, months, start, mc){
+      start*(1 + var)^months + mc*(((1 + var)^months) - 1)/var
+    }
+    main_input <- "total_money"
   
+  # Monthly Contribution expression
+  }else if("monthly_contribution" %in% null_input){
+    simulate_formula <- function(var, months, final, start){
+      (final - start*(1 + var)^months)/((((1 + var)^months) - 1)/var)
+    }
+    main_input <- "monthly_contribution"
+  
+  # Start Money expression
+  }else if("start" %in% null_input){
+    simulate_formula <- function(var, months, final, mc){
+      (final - mc*(((1 + var)^months) - 1)/var)/((1+var)^months)
+    }
+    main_input <- "start"
+  }
+  return(list(simulate_formula = simulate_formula,
+              null_inputs = null_input,
+              main_input = main_input))
 }
-final <- start*(1 + var)^months + mc*(((1 + var)^months) - 1)/var
-start <- (final - mc*(((1 + var)^months) - 1)/var)/((1+var)^months)
 
-
-params = list(start = 1000,
-              years = NULL,
-              monthly_contribution = 100,
+# Main ----
+params = list(years = 4,
               var = NULL,
-              total_money = 1000)
+              start = 0,
+              monthly_contribution = 0,
+              total_money = NULL
+              )
 
+get_formula(params)
 simulator(params)
+
 simulator <- function(params){
   
   qtd_input <- params %>%
@@ -34,9 +56,16 @@ simulator <- function(params){
     sum()
   
   # Other conditions: total_money > start, mc ... all > 0
+  
   # Check if has at least 3 inputs
   if(qtd_input < 3){
     msg <- "Por favor, preencha pelo menos três campos."
+    return(list(value = msg, 
+                status = "erro"))
+    
+    # Check if has at least one input missing to simulate
+  } else if(qtd_input == 5){
+    msg <- "Por favor, deixe uma ou duas variáveis em branco. Senão, não há simulação"
     return(list(value = msg, 
                 status = "erro"))
     
@@ -55,7 +84,8 @@ simulator <- function(params){
     # Check if the single simulate isn't Rentabilidade
   } else if(qtd_input == 4 & is.null(params[['var']])){
     msg <- "Por favor, não deixe apenas o campo Rentabilidade em branco."
-    return(list(value = msg, status = "erro"))
+    return(list(value = msg, 
+                status = "erro"))
     
   }else{
     start = params[['start']]
@@ -66,7 +96,8 @@ simulator <- function(params){
     
     final <- start*(1 + var)^months + mc*(((1 + var)^months) - 1)/var
     
-    return(list(value = final, status = "single_simulate"))
+    return(list(value = final, 
+                status = "single_simulate"))
   }
 }
 
