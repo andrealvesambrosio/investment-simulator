@@ -32,11 +32,21 @@ get_formula <- function(params){
     }
     main_input <- "start"
   }
+  
+  # Check what simulating type we need + axis_x if needed
+  if(length(null_input) == 1){
+    simulate_type = "single"
+    axis_x = NULL
+  } else{
+    simulate_type = "graph"
+    axis_x = null_input[null_input != main_input]
+  }
   return(list(simulate_formula = simulate_formula,
               null_inputs = null_input,
-              main_input = main_input))
+              main_input = main_input,
+              axis_x = axis_x,
+              simulate_type = simulate_type))
 }
-
 check_inputs <- function(params){
   qtd_input <- params %>%
     purrr::map(~length(.)) %>%
@@ -92,23 +102,26 @@ check_inputs <- function(params){
   return(list(value = value,
               status = status))
 }
+
 # Main ----
-params = list(years = 4,
-              var = NULL,
-              start = 0,
-              monthly_contribution = 0,
+params = list(years = 5,
+              var = 0.05,
+              start = 5000,
+              monthly_contribution = 200,
               total_money = NULL
               )
 
+
+check_inputs(params)
 get_formula(params)
 simulator(params)
 
 simulator <- function(params){
   status_inputs <- check_inputs(params)
   if(status_inputs[['status']] != "OK"){
-    return("erro")
+    return("Algo errado nos inputs")
   }else{
-    return("sucesso")
+    info_to_simulate <- get_formula(params)
   }
 }
 
