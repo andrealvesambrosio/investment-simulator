@@ -13,22 +13,25 @@ get_formula <- function(params){
   
   # Total money expression
   if("total_money" %in% null_input){
-    simulate_formula <- function(var, months, start, mc){
-      start*(1 + var)^months + mc*(((1 + var)^months) - 1)/var
+    simulate_formula <- function(params){
+      params[['start']]*(1 + params[['var']])^(12*params[['years']]) + 
+        params[['monthly_contribution']]*(((1 + params[['var']])^(12*params[['years']])) - 1)/params[['var']]
     }
     main_input <- "total_money"
-  
+      
   # Monthly Contribution expression
   }else if("monthly_contribution" %in% null_input){
-    simulate_formula <- function(var, months, final, start){
-      (final - start*(1 + var)^months)/((((1 + var)^months) - 1)/var)
+    simulate_formula <- function(params){
+      (params[['total_money']] - 
+         params[['start']]*(1 + params[['var']])^(12*params[['years']]))/((((1 + params[['var']])^(12*params[['years']])) - 1)/params[['var']])
     }
     main_input <- "monthly_contribution"
   
   # Start Money expression
   }else if("start" %in% null_input){
-    simulate_formula <- function(var, months, final, mc){
-      (final - mc*(((1 + var)^months) - 1)/var)/((1+var)^months)
+    simulate_formula <- function(params){
+      (params[['total_money']] - 
+         params[['monthly_contribution']]*(((1 + params[['var']])^(12*params[['years']])) - 1)/params[['var']])/((1+params[['var']])^(12*params[['years']]))
     }
     main_input <- "start"
   }
@@ -102,7 +105,7 @@ check_inputs <- function(params){
   return(list(value = value,
               status = status))
 }
-
+do_simulation <-
 # Main ----
 params = list(years = 5,
               var = 0.05,
@@ -122,6 +125,7 @@ simulator <- function(params){
     return("Algo errado nos inputs")
   }else{
     info_to_simulate <- get_formula(params)
+    info_to_simulate$simulate_formula(params)
   }
 }
 
