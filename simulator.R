@@ -105,12 +105,24 @@ check_inputs <- function(params){
   return(list(value = value,
               status = status))
 }
-do_simulation <-
+
+do_simulation <- function(params, ...){
+  UseMethod("do_simulation")
+}
+do_simulation.single = function(params, simulate_function){
+  value = info_to_simulate[['simulate_formula']](params)
+  return(value)
+}
+do_simulation.graph <- function(params, simulate_function){
+  # IFs to create the labels, the sequences, ...
+}
+
+
 # Main ----
-params = list(years = 5,
+params = list(years = NULL,
               var = 0.05,
               start = 5000,
-              monthly_contribution = 200,
+              monthly_contribution = 1000,
               total_money = NULL
               )
 
@@ -125,7 +137,10 @@ simulator <- function(params){
     return("Algo errado nos inputs")
   }else{
     info_to_simulate <- get_formula(params)
-    info_to_simulate$simulate_formula(params)
+    class(params) <- info_to_simulate[['simulate_type']]
+    
+    xxz=do_simulation(params = params, 
+                    simulate_function = info_to_simulate)
   }
 }
 
