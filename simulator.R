@@ -1,6 +1,6 @@
 # Libraries ----
 library(dplyr)
-
+library(ggplot2)
 # Auxiliary ----
 get_formula <- function(params){
   # Check which inputs are null
@@ -18,6 +18,7 @@ get_formula <- function(params){
         params[['monthly_contribution']]*(((1 + params[['var']])^(12*params[['years']])) - 1)/params[['var']]
     }
     main_input <- "total_money"
+    label_y <- "Montante final"
       
   # Monthly Contribution expression
   }else if("monthly_contribution" %in% null_input){
@@ -26,6 +27,7 @@ get_formula <- function(params){
          params[['start']]*(1 + params[['var']])^(12*params[['years']]))/((((1 + params[['var']])^(12*params[['years']])) - 1)/params[['var']])
     }
     main_input <- "monthly_contribution"
+    label_y <- "Aporte mensal"
   
   # Start Money expression
   }else if("start" %in% null_input){
@@ -34,6 +36,7 @@ get_formula <- function(params){
          params[['monthly_contribution']]*(((1 + params[['var']])^(12*params[['years']])) - 1)/params[['var']])/((1+params[['var']])^(12*params[['years']]))
     }
     main_input <- "start"
+    label_y <- "Entrada"
   }
   
   # Check what simulating type we need + axis_x if needed
@@ -48,6 +51,7 @@ get_formula <- function(params){
               null_inputs = null_input,
               main_input = main_input,
               axis_x = axis_x,
+              label_y = label_y,
               simulate_type = simulate_type))
 }
 check_inputs <- function(params){
@@ -89,6 +93,9 @@ check_inputs <- function(params){
       if(params[['total_money']] <= params[['start']]){
         value <- "Por favor, o Montante final precisa ser maior que a Entrada."
         status = "erro"
+      }else{
+        value <- "OK"
+        status <- "OK"
   }
     
     # Check if Total Money < Monthly Contribution
@@ -105,31 +112,104 @@ check_inputs <- function(params){
   return(list(value = value,
               status = status))
 }
-
-do_simulation <- function(params, ...){
-  UseMethod("do_simulation")
+control_graph <- function(params, info, ...){
+  label_y = info[['label_y']]
+  UseMethod("control_graph")
 }
-do_simulation.single = function(params, simulate_function){
-  value = info_to_simulate[['simulate_formula']](params)
+control_graph.years <- function(params, info){
+  axis_x = seq(1, 40, by = 1)
+  label_x = "Anos"
+  label_title = paste(label_y, "vs", label_x)
+  
+  return(list(label_y = label_y,
+              label_x = label_x,
+              label_title = label_title,
+              axis_x_calculate = axis_x,
+              axis_x = axis_x))
+}
+control_graph.var <- function(params, info){
+  axis_x = seq(0.0025, 0.025, by = 0.0015)*100
+  label_x = "Rentabilidade ao mês (em %)"
+  label_title = paste(label_y, "vs", label_x)
+  
+  return(list(label_y = label_y,
+              label_x = label_x,
+              label_title = label_title,
+              axis_x_calculate = axis_x/100,
+              axis_x = axis_x))
+}
+control_graph.start <- function(params, info){
+  axis_x = c(seq(100, 1000, by = 100),
+             seq(1500, 5000, by = 500),
+             seq(6000, 10000, by = 1000),
+             seq(12500, 20000, by = 2500),
+             seq(25000, 50000, by = 5000),
+             seq(60000, 100000, by = 10000))
+  
+  label_x = "Entrada"
+  label_title = paste(label_y, "vs", label_x)
+  
+  return(list(label_y = label_y,
+              label_x = label_x,
+              label_title = label_title,
+              axis_x_calculate = axis_x,
+              axis_x = axis_x))
+}
+control_graph.monthly_contribution <- function(params, info){
+  axis_x = c(seq(100, 1000, by = 100),
+             seq(1500, 5000, by = 500),
+             seq(6000, 10000, by = 1000))
+  
+  label_x = "Aporte mensal"
+  label_title = paste(label_y, "vs", label_x)
+  
+  return(list(label_y = label_y,
+              label_x = label_x,
+              label_title = label_title,
+              axis_x_calculate = axis_x,
+              axis_x = axis_x))
+}
+
+make_simulation <- function(params, ...){
+  UseMethod("make_simulation")
+}
+make_simulation.single <- function(params, info){
+  value = info[['simulate_formula']](params)
   return(value)
 }
-do_simulation.graph <- function(params, simulate_function){
-  # IFs to create the labels, the sequences, ...
+make_simulation.graph <- function(params, info){
+  control <- control_graph(params, info)
+
+  params[[info[['axis_x']]]] = control[['axis_x_calculate']]
+  
+  y = info[['simulate_formula']](params)
+  
+  df <- tibble::tibble(x = control[['axis_x']],
+                       y = y) 
+  
+  plot <- df %>%
+    ggplot(aes(x = x, y = y)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    labs(y = control[['label_y']],
+         x = control[['label_x']],
+         title = control[['label_title']])
+  
+  return(plot)
 }
 
 
 # Main ----
-params = list(years = NULL,
-              var = 0.05,
-              start = 5000,
-              monthly_contribution = 1000,
-              total_money = NULL
+params = list(years = 15,
+              var = 0.0052,
+              start = 0,
+              monthly_contribution = NULL,
+              total_money = 1000000
               )
 
 
 check_inputs(params)
 get_formula(params)
-simulator(params)
+x=simulator(params)
 
 simulator <- function(params){
   status_inputs <- check_inputs(params)
@@ -137,11 +217,13 @@ simulator <- function(params){
     return("Algo errado nos inputs")
   }else{
     info_to_simulate <- get_formula(params)
-    class(params) <- info_to_simulate[['simulate_type']]
+    class(params) <- c(info_to_simulate[['simulate_type']],
+                       info_to_simulate[['axis_x']])
     
-    xxz=do_simulation(params = params, 
-                    simulate_function = info_to_simulate)
+    xxz=make_simulation(params = params, 
+                        info = info_to_simulate)
   }
+  return(xxz)
 }
 
 
