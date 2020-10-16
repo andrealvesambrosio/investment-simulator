@@ -3,6 +3,9 @@ make_simulation <- function(params, ...){
 }
 make_simulation.single <- function(params, info){
   value = info[['simulate_formula']](params)
+  if(value < 0){
+    print("Revise a entrada, existem simulações que não fazem sentido..")
+  }
   return(value)
 }
 make_simulation.graph <- function(params, info){
