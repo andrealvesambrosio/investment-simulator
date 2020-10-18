@@ -19,28 +19,66 @@ sidebar <- dashboardSidebar(
 body <- dashboardBody(
   tabItems(
     tabItem(tabName = "graph_simulate",
-            h2("Relações duplas")
+            h2("Gráficos")
     ),
     
     tabItem(tabName = "single_simulate",
             h2("Calculadora"),
-            selectInput(inputId = "main", 
+            
+            selectInput(inputId = "main_single", 
                         label = "Valor a ser simulado", 
                         choices = c("Entrada", "Aporte mensal", "Montante final")),
-            sliderInput("var", "Rentabilidade ao mês (em %)", 0.1, 5, 0.5),
-            sliderInput("years", "Anos", 1, 40, 10),
-            conditionalPanel(
-              condition = "input.main != 'Entrada'",
-              sliderInput("start", "Entrada", 0, 100000, 10000)
+            
+            textOutput("calculator_status"),
+            tags$head(tags$style("#calculator_status{color: red;
+                                 font-size: 20px;
+                                 font-style: bold;
+                                 }"
+                         )
             ),
-            conditionalPanel(
-              condition = "input.main != 'Aporte mensal'",
-              sliderInput("monthly_contribution", "Aporte mensal", 0, 10000, 1000)
+            
+            box(title = "Variáveis",
+                solidHeader = TRUE,
+                status = "primary",
+                
+                numericInput("var_single", 
+                             "Rentabilidade ao mês (em %)", 
+                             min = 0.1, 
+                             max = 5, 
+                             value = 0.5),
+                
+                numericInput("years_single", 
+                             "Anos", 
+                             min = 1,
+                             max = 40, 
+                             value = 10),
+                
+                conditionalPanel(condition = "input.main_single != 'Entrada'",
+                                 numericInput("start_single", 
+                                              "Entrada", 
+                                              min = 0, 
+                                              max = 100e3, 
+                                              value = 10e3)
+                ),
+                conditionalPanel(condition = "input.main_single != 'Aporte mensal'",
+                                 numericInput("monthly_contribution_single", 
+                                              "Aporte mensal", 
+                                              min = 0, 
+                                              max = 10e3, 
+                                              value = 1e3)
+                ),
+                 conditionalPanel(condition = "input.main_single != 'Montante final'",
+                                  numericInput("total_money_single", 
+                                               "Montante final", 
+                                               min = 0, 
+                                               max = 5e6, 
+                                               value = 250e3)
+                 )
             ),
-            conditionalPanel(
-              condition = "input.main != 'Montante final'",
-              sliderInput("total_money", "Montante final", 0, 40, 10)
-            )
+
+            # A static valueBox
+            valueBoxOutput("calculator_value")
+
     )
   )
 )
@@ -53,4 +91,7 @@ dashboardPage(
 )
 
 
-#runApp("C:/Users/55169/Desktop/Dev/investment-simulator")
+
+# library(shiny)
+# library(shinydashboard)
+# runApp("C:/Users/55169/Desktop/Dev/investment-simulator")

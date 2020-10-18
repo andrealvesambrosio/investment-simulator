@@ -2,11 +2,24 @@ make_simulation <- function(params, ...){
   UseMethod("make_simulation")
 }
 make_simulation.single <- function(params, info){
-  value = info[['simulate_formula']](params)
+  value <- info[['simulate_formula']](params)
+  value <- round(value, digits = 2)
+  
   if(value < 0){
-    print("Revise a entrada, existem simulações que não fazem sentido..")
+    status <- ("Revise os valores fornecidos.")
+  }else{
+    status <- NULL
   }
-  return(value)
+  
+  if(info[['main_input']] %in% c("start", "monthly_contribution", "total_money")){
+    value <- paste0("R$ ", formatC(as.numeric(value), 
+                                  format="f", 
+                                  digits=2, 
+                                  big.mark=".",
+                                  decimal.mark = ","))
+  }
+  return(list(value = value,
+              status = status))
 }
 make_simulation.graph <- function(params, info){
   control <- control_graph(params, info)
@@ -28,5 +41,7 @@ make_simulation.graph <- function(params, info){
          title = control[['label_title']]) +
     theme_swd()
   
-  return(plot)
+  status <- NULL
+  return(list(value = plot,
+              status = status))
 }

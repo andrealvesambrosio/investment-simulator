@@ -8,27 +8,27 @@ check_inputs <- function(params){
   
   # Check if has at least 3 inputs
   if(qtd_input < 3){
-    value <- "Por favor, preencha pelo menos três campos."
+    value <- "Por favor, preencha pelo menos tres campos."
     status = "erro"
     
     # Check if has at least one input missing to simulate
   } else if(qtd_input == 5){
-    value <- "Por favor, deixe uma ou duas variáveis em branco. Senão, não há o que calcular"
+    value <- "Por favor, deixe uma ou duas variaveis em branco. Senão, não há o que calcular"
     status = "erro"
     
     # Check if the relation isn't Anos vs Rentabilidade
   } else if(is.null(params[['var']]) & is.null(params[['years']])){
-    value <- "Por favor, não deixe Anos e Rentabilidade em branco ao mesmo tempo."
+    value <- "Por favor, nao deixe Anos e Rentabilidade em branco ao mesmo tempo."
     status = "erro"
     
     # Check if the single simulate isn't Anos
   } else if(qtd_input == 4 & is.null(params[['years']])){
-    value <- "Por favor, não deixe apenas o campo Anos em branco."
+    value <- "Por favor, nao deixe apenas o campo Anos em branco."
     status = "erro"
     
     # Check if the single simulate isn't Rentabilidade
   } else if(qtd_input == 4 & is.null(params[['var']])){
-    value <- "Por favor, não deixe apenas o campo Rentabilidade em branco."
+    value <- "Por favor, nao deixe apenas o campo Rentabilidade em branco."
     status = "erro"
     
     # Check if Total Money < Start
@@ -48,6 +48,9 @@ check_inputs <- function(params){
     if(params[['total_money']] <= params[['monthly_contribution']]){
       value <- "Por favor, o Montante final precisa ser maior que a Entrada."
       status = "erro"
+    }else{
+      value <- "OK"
+      status <- "OK"
     }
   }else{
     value <- "OK"

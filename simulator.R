@@ -17,17 +17,18 @@ simulator <- function(params){
     class(params) <- c(info_to_simulate[['simulate_type']],
                        info_to_simulate[['axis_x']])
     
-    xxz=make_simulation(params = params, 
+    out = make_simulation(params = params, 
                         info = info_to_simulate)
+
   }
-  return(xxz)
+  return(out)
 }
 
 
-params = list(years = NULL,
-              var = NULL,
-              start = 10000,
-              monthly_contribution = NULL,
+params = list(years = 2,
+              var = 0.05,
+              start = NULL,
+              monthly_contribution = 100,
               total_money = 30000
               )
 
