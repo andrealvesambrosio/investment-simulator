@@ -40,6 +40,8 @@ body <- dashboardBody(
             box(title = "Variáveis",
                 solidHeader = TRUE,
                 status = "primary",
+                footer = valueBoxOutput("calculator_value",
+                                        width = NULL),
                 
                 numericInput("var_single", 
                              "Rentabilidade ao mês (em %)", 
@@ -74,10 +76,12 @@ body <- dashboardBody(
                                                max = 5e6, 
                                                value = 250e3)
                  )
-            ),
+            )
+            
+            #plotOutput('plot1')
 
             # A static valueBox
-            valueBoxOutput("calculator_value")
+            
 
     )
   )

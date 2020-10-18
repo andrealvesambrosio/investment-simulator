@@ -59,14 +59,22 @@ function(input, output, session) {
   output$calculator_value <- renderValueBox({
     valueBox(
       simulator(params = selectedParams())[['value']],
-      "Progress", icon = icon("list"),
-      color = "black"
+      subtitle = "",
+      color = "light-blue"
     )})
   
   output$calculator_status <- renderText({ 
     simulator(params = selectedParams())[['status']]
   })
 
+  output$plot1 <- renderPlot({
+    data.frame(x = c(1:10),
+               y = c(21:30)) %>%
+      ggplot2::ggplot(aes(x = x, y = y)) +
+      geom_point() #+
+      #theme_swd()
+  })
+  
   
   selectedData <- reactive({
     iris[, c(input$xcol, input$ycol)]
@@ -75,16 +83,4 @@ function(input, output, session) {
   clusters <- reactive({
     kmeans(selectedData(), input$clusters)
   })
-  
-  output$plot1 <- renderPlot({
-    palette(c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3",
-              "#FF7F00", "#FFFF33", "#A65628", "#F781BF", "#999999"))
-    
-    par(mar = c(5.1, 4.1, 0, 1))
-    plot(selectedData(),
-         col = clusters()$cluster,
-         pch = 20, cex = 3)
-    points(clusters()$centers, pch = 4, cex = 4, lwd = 4)
-  })
-  
 }
