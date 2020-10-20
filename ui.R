@@ -40,6 +40,7 @@ body <- dashboardBody(
             box(title = "Variáveis",
                 solidHeader = TRUE,
                 status = "primary",
+                #background = "navy",
                 footer = valueBoxOutput("calculator_value",
                                         width = NULL),
                 
@@ -76,7 +77,12 @@ body <- dashboardBody(
                                                max = 5e6, 
                                                value = 250e3)
                  )
-            )
+            ),
+            
+            infoBoxOutput("investimentBox", width = 4),
+            infoBoxOutput("profitBox", width = 4),
+            infoBoxOutput("rentabilityBox", width = 4)
+            
             
             #plotOutput('plot1')
 
@@ -91,7 +97,8 @@ body <- dashboardBody(
 dashboardPage(
   dashboardHeader(title = "Simulador"),
   sidebar,
-  body
+  body,
+  skin = "black"
 )
 
 

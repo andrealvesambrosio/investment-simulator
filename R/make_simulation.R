@@ -12,14 +12,44 @@ make_simulation.single <- function(params, info){
   }
   
   if(info[['main_input']] %in% c("start", "monthly_contribution", "total_money")){
-    value <- paste0("R$ ", formatC(as.numeric(value), 
+    value_str <- paste0("R$ ", formatC(as.numeric(value), 
                                   format="f", 
                                   digits=2, 
                                   big.mark=".",
                                   decimal.mark = ","))
   }
-  return(list(value = value,
-              status = status))
+  
+  # Calculate investiment, profit, rentability
+  start_ = params[['start']]
+  monthly_contribution_ = params[['monthly_contribution']]
+  total_money_ = params[['total_money']]
+  years_ = params[['years']]
+  
+  eval(parse(text = paste0(info[['main_input']], "_ <- value")))
+  investiment <- start_ + 12*years_*monthly_contribution_
+  profit <- total_money_ - investiment
+  rentability <- (paste0(round(100*(profit/investiment), 
+                               digits = 2), 
+                         "%"))
+  
+  investiment <- paste0("R$ ", formatC(as.numeric(investiment), 
+                        format="f", 
+                        digits=2, 
+                        big.mark=".",
+                        decimal.mark = ","))
+  
+  profit <- paste0("R$ ", formatC(as.numeric(profit), 
+                                       format="f", 
+                                       digits=2, 
+                                       big.mark=".",
+                                       decimal.mark = ","))
+  
+  
+  return(list(value = value_str,
+              status = status,
+              investiment = investiment,
+              profit = profit,
+              rentability = rentability))
 }
 make_simulation.graph <- function(params, info){
   control <- control_graph(params, info)

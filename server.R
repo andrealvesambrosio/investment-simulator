@@ -66,6 +66,32 @@ function(input, output, session) {
   output$calculator_status <- renderText({ 
     simulator(params = selectedParams())[['status']]
   })
+  
+  output$investimentBox <- renderInfoBox({
+    infoBox(
+      "Investimento", 
+      simulator(params = selectedParams())[['investiment']],
+      color = "blue", 
+      fill = FALSE
+    )
+  })
+  
+  output$profitBox <- renderInfoBox({
+    infoBox(
+      "Lucro",
+      simulator(params = selectedParams())[['profit']],
+      color = "olive", 
+      fill = FALSE
+    )
+  })
+  
+  output$rentabilityBox <- renderInfoBox({
+    infoBox(
+      "Rentabilidade", 
+      simulator(params = selectedParams())[['rentability']],
+      color = "navy", fill = F
+    )
+  })
 
   output$plot1 <- renderPlot({
     data.frame(x = c(1:10),
@@ -73,14 +99,5 @@ function(input, output, session) {
       ggplot2::ggplot(aes(x = x, y = y)) +
       geom_point() #+
       #theme_swd()
-  })
-  
-  
-  selectedData <- reactive({
-    iris[, c(input$xcol, input$ycol)]
-  })
-  
-  clusters <- reactive({
-    kmeans(selectedData(), input$clusters)
   })
 }

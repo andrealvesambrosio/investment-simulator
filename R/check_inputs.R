@@ -59,3 +59,44 @@ check_inputs <- function(params){
   return(list(value = value,
               status = status))
 }
+
+
+
+
+input_range <- list(var = list(min = 0, 
+                               max = 5, 
+                               start = 0.5,
+                               include_min = F, 
+                               class = "numeric"),
+                    
+                   years = list(min = 0, 
+                                max = 60, 
+                                start = 5,
+                                include_min = F, 
+                                class = "integer"),
+                   
+                   monthly_contribution = list(min = 0, 
+                                               max = 10000, 
+                                               start = 1000,
+                                               include_min = T, 
+                                               class = "numeric"),
+                   
+                   start = list(min = 0, 
+                                max = 100000, 
+                                include_min = T, 
+                                start = 0,
+                                class = "numeric"),
+                   
+                   total_money = list(min = 0, 
+                                      max = 5e6, 
+                                      start = 100000,
+                                      include_min = F, 
+                                      class = "numeric"))
+
+
+
+
+
+
+
+
