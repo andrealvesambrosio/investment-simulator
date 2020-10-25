@@ -18,10 +18,28 @@ is_missing <- function(obj){
 
 check_inputs <- function(params, input_rules, supress = TRUE){
   message("Entrando no check_inputs")
-  cond <- TRUE
-  index <- 1
+  message(params)
+  
   status <- "OK"
   value <- ""
+  
+  # Checking missing inputs
+  qtd_NA <- params %>%
+    is.na() %>%
+    sum()
+  if(qtd_NA > 0){
+    status <- "erro"
+    if(supress == FALSE){
+      value <- "Por favor preencha todos os campos"
+    }
+    return(list(status = status,
+                value = value))
+  }
+  
+  # Checking if input are all numbers
+  
+  cond <- TRUE
+  index <- 1
   while(cond){
     message("index: ", index)
     my_param <- names(input_rules)[index]
