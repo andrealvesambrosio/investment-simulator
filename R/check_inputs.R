@@ -1,102 +1,53 @@
-check_inputs <- function(params){
-  qtd_input <- params %>%
-    purrr::map(~length(.)) %>%
-    unlist() %>%
-    sum()
-  
-  # Other conditions: all > 0
-  
-  # Check if has at least 3 inputs
-  if(qtd_input < 3){
-    value <- "Por favor, preencha pelo menos tres campos."
-    status = "erro"
-    
-    # Check if has at least one input missing to simulate
-  } else if(qtd_input == 5){
-    value <- "Por favor, deixe uma ou duas variaveis em branco. Senão, não há o que calcular"
-    status = "erro"
-    
-    # Check if the relation isn't Anos vs Rentabilidade
-  } else if(is.null(params[['var']]) & is.null(params[['years']])){
-    value <- "Por favor, nao deixe Anos e Rentabilidade em branco ao mesmo tempo."
-    status = "erro"
-    
-    # Check if the single simulate isn't Anos
-  } else if(qtd_input == 4 & is.null(params[['years']])){
-    value <- "Por favor, nao deixe apenas o campo Anos em branco."
-    status = "erro"
-    
-    # Check if the single simulate isn't Rentabilidade
-  } else if(qtd_input == 4 & is.null(params[['var']])){
-    value <- "Por favor, nao deixe apenas o campo Rentabilidade em branco."
-    status = "erro"
-    
-    # Check if Total Money < Start
-  } else if((!is.null(params[['total_money']]) & 
-             !is.null(params[['start']]))){
-    if(params[['total_money']] <= params[['start']]){
-      value <- "Por favor, o Montante final precisa ser maior que a Entrada."
-      status = "erro"
-    }else{
-      value <- "OK"
-      status <- "OK"
-    }
-    
-    # Check if Total Money < Monthly Contribution
-  } else if((!is.null(params[['total_money']]) & 
-             !is.null(params[['monthly_contribution']]))){
-    if(params[['total_money']] <= params[['monthly_contribution']]){
-      value <- "Por favor, o Montante final precisa ser maior que a Entrada."
-      status = "erro"
-    }else{
-      value <- "OK"
-      status <- "OK"
-    }
+interval <- function(obj, min, max, include_min){
+  if(include_min == T){
+    obj >= min & obj <= max
   }else{
-    value <- "OK"
-    status <- "OK"
+    obj > min & obj <= max
+  }
+}
+
+is_missing <- function(obj){
+  if(is.null(obj)){
+    return(TRUE)
+  }else if(is.na(obj)){
+    return(TRUE)
+  }else{
+    return(FALSE)
+  }
+}
+
+check_inputs <- function(params, input_rules, supress = TRUE){
+  message("Entrando no check_inputs")
+  cond <- TRUE
+  index <- 1
+  status <- "OK"
+  value <- ""
+  while(cond){
+    message("index: ", index)
+    my_param <- names(input_rules)[index]
+    my_rules <- input_rules[[my_param]]
+
+    # Main input is from class NULL
+    if(is.null(params[[my_param]])){
+      cond <- TRUE
+    }else{
+      cond <- interval(params[[my_param]], 
+                       min = my_rules[['min']],
+                       max = my_rules[['max']],
+                       include_min = my_rules[['include_min']])
+    }
+  
+    if(cond == FALSE){
+      status <- "erro"
+      if(supress == FALSE){
+        value <- my_rules[['value']]
+      }
+    }
+    if(index == length(names(input_rules))){
+      cond <- FALSE
+    }
+    index <- index + 1
   }
   return(list(value = value,
               status = status))
 }
-
-
-
-
-input_range <- list(var = list(min = 0, 
-                               max = 5, 
-                               start = 0.5,
-                               include_min = F, 
-                               class = "numeric"),
-                    
-                   years = list(min = 0, 
-                                max = 60, 
-                                start = 5,
-                                include_min = F, 
-                                class = "integer"),
-                   
-                   monthly_contribution = list(min = 0, 
-                                               max = 10000, 
-                                               start = 1000,
-                                               include_min = T, 
-                                               class = "numeric"),
-                   
-                   start = list(min = 0, 
-                                max = 100000, 
-                                include_min = T, 
-                                start = 0,
-                                class = "numeric"),
-                   
-                   total_money = list(min = 0, 
-                                      max = 5e6, 
-                                      start = 100000,
-                                      include_min = F, 
-                                      class = "numeric"))
-
-
-
-
-
-
-
-

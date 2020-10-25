@@ -1,6 +1,5 @@
-# k-means only works with numerical variables,
-# so don't give the user the option to select
-# a categorical variable
+# Change decimal mark global R to ","
+# Try to add big mark "." global to R
 sidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Calculadora", 

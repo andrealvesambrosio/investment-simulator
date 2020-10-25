@@ -1,6 +1,7 @@
 # Libraries ----
 library(dplyr)
 library(ggplot2)
+library(rjson)
 
 # Source ----
 source("C:/Users/55169/Desktop/Dev/investment-simulator/R/theme_swd.R")
@@ -8,35 +9,44 @@ source("C:/Users/55169/Desktop/Dev/investment-simulator/R/control_graph.R")
 source("C:/Users/55169/Desktop/Dev/investment-simulator/R/make_simulation.R")
 source("C:/Users/55169/Desktop/Dev/investment-simulator/R/check_inputs.R")
 source("C:/Users/55169/Desktop/Dev/investment-simulator/R/get_formula.R")
+input_rules <- fromJSON(file = "C:/Users/55169/Desktop/Dev/investment-simulator/check_input_value.json")
 
 # Server ----
 function(input, output, session) {
   
   # Simulator
-  simulator <- function(params){
-    status_inputs <- check_inputs(params)
+  simulator <- function(params, supress = TRUE){
+    message("Entrou no simulator")
+    message(params)
+    status_inputs <- check_inputs(params, input_rules, supress = supress)
+    message("Rodou o check_inputs")
     if(status_inputs[['status']] != "OK"){
-      return(status_inputs$value)
+      message("check_inputs deu erro\n")
+      return(status_inputs)
     }else{
+      message("check_inputs deu certo\n")
       info_to_simulate <- get_formula(params)
       class(params) <- c(info_to_simulate[['simulate_type']],
                          info_to_simulate[['axis_x']])
       
       out = make_simulation(params = params, 
                             info = info_to_simulate)
+      message(out)
+      message(class(out))
+      return(out)
     }
-    return(out)
   }
   
   # Combine the selected variables into a new data frame
   selectedParams <- reactive({
-    
+    message("Entrou no selectedParams")
     # Get input value
     var = input$var_single/100
     years = input$years_single
     monthly_contribution = input$monthly_contribution_single
     total_money = input$total_money_single
     start = input$start_single
+    message("Criou variaveis")
     
     # Force the main input be null
     if(input$main_single == "Entrada"){
@@ -48,6 +58,7 @@ function(input, output, session) {
     }else if(input$main_single == "Anos"){
       years <- NULL
     }
+    message("Saindo do selectedParams\n")
     
    return(list(var = var, 
                years = years, 
@@ -64,7 +75,7 @@ function(input, output, session) {
     )})
   
   output$calculator_status <- renderText({ 
-    simulator(params = selectedParams())[['status']]
+    simulator(params = selectedParams(), supress = FALSE)[['value']]
   })
   
   output$investimentBox <- renderInfoBox({

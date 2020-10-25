@@ -1,0 +1,46 @@
+{
+"var" : {
+	"min" : [0],
+	"max" : [0.05], 
+	"start" : [0.005],
+	"include_min" : ["FALSE"], 
+	"class" : ["numeric"],
+	"value": ["Rentabilidade precisa estar entre 0 (não incluso) e 5"]
+	},
+                    
+"years" : {
+	"min" : [1], 
+	"max" : [60], 
+	"start" : [5],
+ 	"include_min" : ["TRUE"], 
+	"class" : ["integer"],
+	"value" : ["Tempo (em anos) precisa estar entre 1 a 60"]
+	},
+                    
+"monthly_contribution" : {
+	"min" : [0], 
+	"max" : [10000], 
+ 	"start" : [1000],
+	"include_min" : ["TRUE"], 
+	"class" : ["numeric"],
+	"value" : ["Aporte mensal precisa estar entre R$ 1.000,00 e R$ 10.000,00"]
+},
+                    
+"start" : {
+	"min" : [0], 
+	"max" : [100000], 
+	"include_min" : ["TRUE"], 
+	"start" : [0],
+	"class" : ["numeric"],
+	"value" : ["Entrada precisa estar entre R$ 0,00 a R$ 100.000,00"]
+	},
+                    
+"total_money" : {
+	"min" : [0], 
+	"max" : [5000000], 
+	"start" : [100000],
+	"include_min" : ["FALSE"], 
+	"class" : ["numeric"],
+	"value" : ["Montante final precisa estar entre R$ 0,00 a R$ 5.000.000,00"]
+	}
+}
