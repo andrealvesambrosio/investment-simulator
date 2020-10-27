@@ -46,6 +46,7 @@ make_simulation.single <- function(params, info){
   
   
   return(list(value = value_str,
+              value_raw = value,
               status = status,
               investiment = investiment,
               profit = profit,

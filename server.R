@@ -17,7 +17,6 @@ function(input, output, session) {
   # Simulator
   simulator <- function(params, supress = TRUE){
     message("Entrou no simulator")
-    message(params)
     status_inputs <- check_inputs(params, input_rules, supress = supress)
     message("Rodou o check_inputs")
     if(status_inputs[['status']] != "OK"){
@@ -29,10 +28,20 @@ function(input, output, session) {
       class(params) <- c(info_to_simulate[['simulate_type']],
                          info_to_simulate[['axis_x']])
       
-      out = make_simulation(params = params, 
+      out <- make_simulation(params = params, 
                             info = info_to_simulate)
-      message(out)
-      message(class(out))
+      if(supress == FALSE){
+        negative_control <- out[c('value_raw', 'investment', 'profit', 'rentability')] %>%
+          unlist() %>%
+          min()
+        message("aopa")
+        message(negative_control)
+        if(negative_control < 0){
+          out[['value']] <- "Por favor, revise os valores."
+        }else{
+          out[['value']] <- ""
+        }
+      }
       return(out)
     }
   }
@@ -77,7 +86,6 @@ function(input, output, session) {
   output$calculator_status <- renderText({ 
     simulator(params = selectedParams(), supress = FALSE)[['value']]
   })
-  
   output$investimentBox <- renderInfoBox({
     infoBox(
       "Investimento", 
@@ -86,7 +94,6 @@ function(input, output, session) {
       fill = FALSE
     )
   })
-  
   output$profitBox <- renderInfoBox({
     infoBox(
       "Lucro",
@@ -95,7 +102,6 @@ function(input, output, session) {
       fill = FALSE
     )
   })
-  
   output$rentabilityBox <- renderInfoBox({
     infoBox(
       "Rentabilidade", 

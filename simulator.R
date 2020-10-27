@@ -27,7 +27,7 @@ simulator <- function(params){
 
 params = list(years = 2,
               var = 0.05,
-              start = NULL,
+              start = NA,
               monthly_contribution = 100,
               total_money = 30000
               )

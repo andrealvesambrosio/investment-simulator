@@ -1,5 +1,8 @@
 # Change decimal mark global R to ","
 # Try to add big mark "." global to R
+library(rjson)
+input_rules <- fromJSON(file = "C:/Users/55169/Desktop/Dev/investment-simulator/check_input_value.json")
+
 sidebar <- dashboardSidebar(
   sidebarMenu(
     menuItem("Calculadora", 
@@ -27,7 +30,6 @@ body <- dashboardBody(
             selectInput(inputId = "main_single", 
                         label = "Valor a ser simulado", 
                         choices = c("Entrada", "Aporte mensal", "Montante final")),
-            
             textOutput("calculator_status"),
             tags$head(tags$style("#calculator_status{color: red;
                                  font-size: 20px;
@@ -42,39 +44,41 @@ body <- dashboardBody(
                 #background = "navy",
                 footer = valueBoxOutput("calculator_value",
                                         width = NULL),
+                h6("Utilize '.' para casa decimal. Fora isso, sem caracteres especiais"),
                 
                 numericInput("var_single", 
                              "Rentabilidade ao mês (em %)", 
-                             min = 0.1, 
-                             max = 5, 
-                             value = 0.5),
+                             min = 100*input_rules[['var']][['min']], 
+                             max = 100*input_rules[['var']][['max']], 
+                             value = 100*input_rules[['var']][['start']],
+                             step = 0.1),
                 
                 numericInput("years_single", 
                              "Anos", 
-                             min = 1,
-                             max = 40, 
-                             value = 10),
+                             min = input_rules[['years']][['min']], 
+                             max = input_rules[['years']][['max']], 
+                             value = input_rules[['years']][['start']]),
                 
                 conditionalPanel(condition = "input.main_single != 'Entrada'",
                                  numericInput("start_single", 
                                               "Entrada", 
-                                              min = 0, 
-                                              max = 100e3, 
-                                              value = 10e3)
+                                              min = input_rules[['start']][['min']], 
+                                              max = input_rules[['start']][['max']], 
+                                              value = input_rules[['start']][['start']])
                 ),
                 conditionalPanel(condition = "input.main_single != 'Aporte mensal'",
                                  numericInput("monthly_contribution_single", 
                                               "Aporte mensal", 
-                                              min = 0, 
-                                              max = 10e3, 
-                                              value = 1e3)
+                                              min = input_rules[['monthly_contribution']][['min']], 
+                                              max = input_rules[['monthly_contribution']][['max']], 
+                                              value = input_rules[['monthly_contribution']][['start']])
                 ),
                  conditionalPanel(condition = "input.main_single != 'Montante final'",
                                   numericInput("total_money_single", 
                                                "Montante final", 
-                                               min = 0, 
-                                               max = 5e6, 
-                                               value = 250e3)
+                                               min = input_rules[['total_money']][['min']], 
+                                               max = input_rules[['total_money']][['max']], 
+                                               value = input_rules[['total_money']][['start']])
                  )
             ),
             

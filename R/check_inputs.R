@@ -18,7 +18,6 @@ is_missing <- function(obj){
 
 check_inputs <- function(params, input_rules, supress = TRUE){
   message("Entrando no check_inputs")
-  message(params)
   
   status <- "OK"
   value <- ""
@@ -30,18 +29,32 @@ check_inputs <- function(params, input_rules, supress = TRUE){
   if(qtd_NA > 0){
     status <- "erro"
     if(supress == FALSE){
-      value <- "Por favor preencha todos os campos"
+      value <- "Por favor preencha todos os campos. (apenas números)"
     }
     return(list(status = status,
                 value = value))
   }
   
   # Checking if input are all numbers
+  qtd_numeric <- params %>%
+    purrr::map(~is.numeric(.)) %>%
+    unlist() %>%
+    sum()
   
+  if(qtd_numeric < 4){
+    status <- "erro"
+    if(supress == FALSE){
+      value <- "Os valores precisam ser numéricos"
+    }
+    return(list(status = status,
+                value = value))
+  }
+  
+  
+  # Input interval rules
   cond <- TRUE
   index <- 1
   while(cond){
-    message("index: ", index)
     my_param <- names(input_rules)[index]
     my_rules <- input_rules[[my_param]]
 
