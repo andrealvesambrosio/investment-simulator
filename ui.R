@@ -20,10 +20,100 @@ sidebar <- dashboardSidebar(
 
 body <- dashboardBody(
   tabItems(
+    
+    # Graph simulate ----
     tabItem(tabName = "graph_simulate",
-            h2("Gráficos")
+            h2("Gráficos"),
+            
+            box(
+              title = "Customize seu gráfico",
+              solidHeader = TRUE,
+              status = "primary",
+              collapsible = TRUE,
+              h6("Utilize '.' para casa decimal. Fora isso, sem pontuações."),
+              footer = "Erros",
+              #background = 'light-blue',
+              box(
+                title = "Selecione as variáveis",
+                status = "primary",
+                solidHeader = TRUE,
+                #background = 'light-blue',
+                selectInput(inputId = "var1_graph", 
+                            label = "", 
+                            choices = c("Aporte mensal", 
+                                        "Entrada",
+                                        "Montante final", 
+                                        "Rentabilidade",
+                                        "Anos")),
+                selectInput(inputId = "var2_graph", 
+                            label = "", 
+                            choices = c("Anos",
+                                        "Entrada", 
+                                        "Aporte mensal", 
+                                        "Montante final", 
+                                        "Rentabilidade"))
+              ),
+              box(
+                title = "Variáveis fixadas",
+                status = "primary",
+                solidHeader = TRUE,
+                #background = "blue",
+                
+                
+    
+                
+                conditionalPanel(condition = "input.var1_graph != 'Rentabilidade' & 
+                                 input.var2_graph != 'Rentabilidade'",
+                                 numericInput("var_graph", 
+                                              "Rentabilidade", 
+                                              min = 100*input_rules[['var']][['min']], 
+                                              max = 100*input_rules[['var']][['max']], 
+                                              value = 100*input_rules[['var']][['start']],
+                                              step = 0.1)
+                ),
+                
+                conditionalPanel(condition = "input.var1_graph != 'Entrada' & 
+                                 input.var2_graph != 'Entrada'",
+                                 numericInput("start_graph", 
+                                              "Entrada", 
+                                              min = input_rules[['start']][['min']], 
+                                              max = input_rules[['start']][['max']], 
+                                              value = input_rules[['start']][['start']])
+                ),
+                
+                conditionalPanel(condition = "input.var1_graph != 'Anos' & 
+                                 input.var2_graph != 'Anos'",
+                                 numericInput("years_graph", 
+                                              "Anos", 
+                                              min = input_rules[['years']][['min']], 
+                                              max = input_rules[['years']][['max']], 
+                                              value = input_rules[['years']][['start']])
+                ),
+                conditionalPanel(condition = "input.var1_graph != 'Aporte mensal' & 
+                                 input.var2_graph != 'Aporte mensal'",
+                                 numericInput("monthly_contribution_graph", 
+                                              "Aporte mensal", 
+                                              min = input_rules[['monthly_contribution']][['min']], 
+                                              max = input_rules[['monthly_contribution']][['max']], 
+                                              value = input_rules[['monthly_contribution']][['start']])
+                ),
+                conditionalPanel(condition = "input.var1_graph != 'Montante final' & 
+                                 input.var2_graph != 'Montante final'",
+                                 numericInput("total_money_graph", 
+                                              "Montante final", 
+                                              min = input_rules[['total_money']][['min']], 
+                                              max = input_rules[['total_money']][['max']], 
+                                              value = input_rules[['total_money']][['start']])
+                )
+              )
+            ),
+            box(
+                plotOutput('plot1')
+                )
+           
     ),
     
+    # Single simulate ----
     tabItem(tabName = "single_simulate",
             h2("Calculadora"),
             
@@ -38,13 +128,14 @@ body <- dashboardBody(
                          )
             ),
             
+            
             box(title = "Variáveis",
                 solidHeader = TRUE,
                 status = "primary",
                 #background = "navy",
                 footer = valueBoxOutput("calculator_value",
                                         width = NULL),
-                h6("Utilize '.' para casa decimal. Fora isso, sem caracteres especiais"),
+                h6("Utilize '.' para casa decimal. Fora isso, sem pontuações."),
                 
                 numericInput("var_single", 
                              "Rentabilidade ao mês (em %)", 
@@ -87,11 +178,9 @@ body <- dashboardBody(
             infoBoxOutput("rentabilityBox", width = 4)
             
             
-            #plotOutput('plot1')
-
-            # A static valueBox
             
 
+            # A static valueBox
     )
   )
 )

@@ -27,10 +27,23 @@ simulator <- function(params){
 
 params = list(years = 2,
               var = 0.05,
-              start = NA,
+              start = 1000,
               monthly_contribution = 100,
-              total_money = 30000
+              total_money = NULL
               )
+info_to_simulate <- get_formula(params)
+info_to_simulate[['simulate_formula']](params)
+
 
 x=simulator(params)
 x
+
+
+
+juros   <- 0.0031
+t       <- 12*17
+entrada <- 648997.03
+aporte <- 985
+
+M <- entrada*(1 + juros)^t + aporte*(((1 + juros)^t) - 1)/juros
+M
