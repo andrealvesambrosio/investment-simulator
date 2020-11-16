@@ -15,9 +15,11 @@ input_rules <- fromJSON(file = "C:/Users/55169/Desktop/Dev/investment-simulator/
 function(input, output, session) {
   
   # Simulator
-  simulator <- function(params, supress = TRUE){
+  simulator <- function(params, supress = TRUE, qtd_var = 1){
     message("Entrou no simulator")
-    status_inputs <- check_inputs(params, input_rules, supress = supress)
+    status_inputs <- check_inputs(params, input_rules, 
+                                  supress = supress, 
+                                  qtd_null = qtd_var)
     message("Rodou o check_inputs")
     if(status_inputs[['status']] != "OK"){
       message("check_inputs deu erro\n")
@@ -30,66 +32,78 @@ function(input, output, session) {
       
       out <- make_simulation(params = params, 
                             info = info_to_simulate)
-      if(supress == FALSE){
-        negative_control <- out[c('value_raw', 'investment', 'profit', 'rentability')] %>%
-          unlist() %>%
-          min()
-        message("aopa")
-        message(negative_control)
-        if(negative_control < 0){
-          out[['value']] <- "Por favor, revise os valores."
-        }else{
-          out[['value']] <- ""
+      
+      if("single" %in% class(params)){
+        if(supress == FALSE){
+          negative_control <- out[c('value_raw', 'investment', 'profit', 'rentability')] %>%
+            unlist() %>%
+            min()
+          if(negative_control < 0){
+            out[['value']] <- "Por favor, revise os valores."
+          }else{
+            out[['value']] <- ""
+          }
         }
       }
       return(out)
     }
   }
   
-  # Combine the selected variables into a new data frame
-  selectedParams <- reactive({
-    message("Entrou no selectedParams")
+  # Create a list with all inputs
+  selectParams_generic <- function(estimate_type, var_type){
+    message("Entrou no selectParams Generic")
     # Get input value
-    var = input$var_single/100
-    years = input$years_single
-    monthly_contribution = input$monthly_contribution_single
-    total_money = input$total_money_single
-    start = input$start_single
+    var <- input[[paste0('var_', estimate_type)]]/100
+    years <- input[[paste0('years_', estimate_type)]]
+    monthly_contribution <- input[[paste0('monthly_contribution_', estimate_type)]]
+    total_money <- input[[paste0('total_money_', estimate_type)]]
+    start <- input[[paste0('start_', estimate_type)]]
     message("Criou variaveis")
     
     # Force the main input be null
-    if(input$main_single == "Entrada"){
-      start <- NULL
-    }else if(input$main_single == "Aporte mensal"){
-      monthly_contribution <- NULL
-    }else if(input$main_single == "Montante final"){
-      total_money <- NULL
-    }else if(input$main_single == "Anos"){
-      years <- NULL
+    for(null_var in var_type){
+      if(input[[paste0(null_var, '_', estimate_type)]] == "Entrada"){
+        start <- NULL
+      }else if(input[[paste0(null_var, '_', estimate_type)]] == "Aporte mensal"){
+        monthly_contribution <- NULL
+      }else if(input[[paste0(null_var, '_', estimate_type)]] == "Montante final"){
+        total_money <- NULL
+      }else if(input[[paste0(null_var, '_', estimate_type)]] == "Anos"){
+        years <- NULL
+      }
     }
-    message("Saindo do selectedParams\n")
     
-   return(list(var = var, 
-               years = years, 
-               monthly_contribution = monthly_contribution, 
-               total_money = total_money, 
-               start = start))
+    return(list(var = var,
+                years = years,
+                start = start,
+                monthly_contribution = monthly_contribution,
+                total_money = total_money))
+  }
+  
+  selectParams_single <- reactive({
+    params <- selectParams_generic(estimate_type = "single", var_type = "main") 
+    return(params)
+  })
+  
+  selectParams_graph <- reactive({
+    params <- selectParams_generic(estimate_type = "graph", var_type = c("var1", "var2")) 
+    return(params)
   })
   
   output$calculator_value <- renderValueBox({
     valueBox(
-      simulator(params = selectedParams())[['value']],
+      simulator(params = selectParams_single())[['value']],
       subtitle = "",
       color = "light-blue"
     )})
   
   output$calculator_status <- renderText({ 
-    simulator(params = selectedParams(), supress = FALSE)[['value']]
+    simulator(params = selectParams_single(), supress = FALSE)[['value']]
   })
   output$investimentBox <- renderInfoBox({
     infoBox(
       "Investimento", 
-      simulator(params = selectedParams())[['investiment']],
+      simulator(params = selectParams_single())[['investiment']],
       color = "blue", 
       fill = FALSE
     )
@@ -97,7 +111,7 @@ function(input, output, session) {
   output$profitBox <- renderInfoBox({
     infoBox(
       "Lucro",
-      simulator(params = selectedParams())[['profit']],
+      simulator(params = selectParams_single())[['profit']],
       color = "olive", 
       fill = FALSE
     )
@@ -105,12 +119,15 @@ function(input, output, session) {
   output$rentabilityBox <- renderInfoBox({
     infoBox(
       "Rentabilidade", 
-      simulator(params = selectedParams())[['rentability']],
+      simulator(params = selectParams_single())[['rentability']],
       color = "navy", fill = F
     )
   })
 
   output$plot1 <- renderPlot({
+    my_plot <- simulator(params, supress = TRUE, qtd_var = 2)
+    #input$var1_graph
+    #input$var2_graph
     data.frame(x = c(1:10),
                y = c(21:30)) %>%
       ggplot2::ggplot(aes(x = x, y = y)) +

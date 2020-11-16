@@ -112,7 +112,6 @@ body <- dashboardBody(
                 )
            
     ),
-    
     # Single simulate ----
     tabItem(tabName = "single_simulate",
             h2("Calculadora"),
@@ -185,6 +184,7 @@ body <- dashboardBody(
   )
 )
 
+# Dashboard ----
 # Put them together into a dashboardPage
 dashboardPage(
   dashboardHeader(title = "Simulador"),

@@ -69,8 +69,8 @@ make_simulation.graph <- function(params, info){
     #geom_bar(stat = "identity", position = "dodge") +
     labs(y = control[['label_y']],
          x = control[['label_x']],
-         title = control[['label_title']]) +
-    theme_swd()
+         title = control[['label_title']]) #+
+    #theme_swd()
   
   status <- NULL
   return(list(value = plot,

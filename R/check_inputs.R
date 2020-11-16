@@ -16,7 +16,7 @@ is_missing <- function(obj){
   }
 }
 
-check_inputs <- function(params, input_rules, supress = TRUE){
+check_inputs <- function(params, input_rules, supress = TRUE, qtd_null = 1){
   message("Entrando no check_inputs")
   
   status <- "OK"
@@ -41,7 +41,7 @@ check_inputs <- function(params, input_rules, supress = TRUE){
     unlist() %>%
     sum()
   
-  if(qtd_numeric < 4){
+  if(qtd_numeric < 5 - qtd_null){
     status <- "erro"
     if(supress == FALSE){
       value <- "Os valores precisam ser numéricos"
