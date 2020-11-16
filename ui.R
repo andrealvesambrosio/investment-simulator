@@ -58,10 +58,7 @@ body <- dashboardBody(
                 status = "primary",
                 solidHeader = TRUE,
                 #background = "blue",
-                
-                
-    
-                
+
                 conditionalPanel(condition = "input.var1_graph != 'Rentabilidade' & 
                                  input.var2_graph != 'Rentabilidade'",
                                  numericInput("var_graph", 
@@ -108,7 +105,7 @@ body <- dashboardBody(
               )
             ),
             box(
-                plotOutput('plot1')
+                plotOutput('graph')
                 )
            
     ),

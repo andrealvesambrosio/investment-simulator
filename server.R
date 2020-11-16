@@ -14,7 +14,7 @@ input_rules <- fromJSON(file = "C:/Users/55169/Desktop/Dev/investment-simulator/
 # Server ----
 function(input, output, session) {
   
-  # Simulator
+  # Simulator ----
   simulator <- function(params, supress = TRUE, qtd_var = 1){
     message("Entrou no simulator")
     status_inputs <- check_inputs(params, input_rules, 
@@ -27,11 +27,16 @@ function(input, output, session) {
     }else{
       message("check_inputs deu certo\n")
       info_to_simulate <- get_formula(params)
+      #message("info_to_simulate")###
+      #message(info_to_simulate)
       class(params) <- c(info_to_simulate[['simulate_type']],
                          info_to_simulate[['axis_x']])
       
       out <- make_simulation(params = params, 
                             info = info_to_simulate)
+      
+      #message("out")###
+      #message(out)
       
       if("single" %in% class(params)){
         if(supress == FALSE){
@@ -49,7 +54,7 @@ function(input, output, session) {
     }
   }
   
-  # Create a list with all inputs
+  # Select Params: create a list to simulator ----
   selectParams_generic <- function(estimate_type, var_type){
     message("Entrou no selectParams Generic")
     # Get input value
@@ -70,6 +75,8 @@ function(input, output, session) {
         total_money <- NULL
       }else if(input[[paste0(null_var, '_', estimate_type)]] == "Anos"){
         years <- NULL
+      }else if(input[[paste0(null_var, '_', estimate_type)]] == "Rentabilidade"){
+        var <- NULL
       }
     }
     
@@ -80,16 +87,20 @@ function(input, output, session) {
                 total_money = total_money))
   }
   
+  # Select params to single
   selectParams_single <- reactive({
     params <- selectParams_generic(estimate_type = "single", var_type = "main") 
     return(params)
   })
   
+  # Select params to graphs
   selectParams_graph <- reactive({
     params <- selectParams_generic(estimate_type = "graph", var_type = c("var1", "var2")) 
     return(params)
   })
   
+  
+  # Single simulate functions ----
   output$calculator_value <- renderValueBox({
     valueBox(
       simulator(params = selectParams_single())[['value']],
@@ -124,14 +135,14 @@ function(input, output, session) {
     )
   })
 
-  output$plot1 <- renderPlot({
-    my_plot <- simulator(params, supress = TRUE, qtd_var = 2)
-    #input$var1_graph
-    #input$var2_graph
-    data.frame(x = c(1:10),
-               y = c(21:30)) %>%
-      ggplot2::ggplot(aes(x = x, y = y)) +
-      geom_point() #+
+  # Graph simulate function
+  output$graph <- renderPlot({
+    base_plot <- simulator(params = selectParams_graph(), 
+                           supress = TRUE, 
+                           qtd_var = 2)[['value']]
+    
+    
+    base_plot
       #theme_swd()
   })
 }
