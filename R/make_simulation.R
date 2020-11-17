@@ -62,17 +62,37 @@ make_simulation.graph <- function(params, info){
   df <- tibble::tibble(x = control[['axis_x']],
                        y = y) 
   
-  plot <- df %>%
-    ggplot(aes(x = x, y = y)) +
-    geom_point(color = "#d7385e") +
-    geom_line(color = "#d7385e") +
-    #geom_bar(stat = "identity", position = "dodge") +
-    labs(y = control[['label_y']],
-         x = control[['label_x']],
-         title = control[['label_title']]) #+
-    #theme_swd()
+  # Control the scale
+  # Axis y
+  log_control_y <- as.integer(log10(max(df$y)))
+  if(between(x = log_control_y, left = 3, right = 5)){
+    control_str_y <- "(em milhares)"
+    df$y <- df$y/1e3
+  }else if(log_control_y >= 6){
+    control_str_y <- "(em milhões)"
+    df$y <- df$y/1e6
+  }else{
+    control_str_y <- ""
+  }
   
+  # Axis x
+  log_control_x <- as.integer(log10(max(df$x)))
+  if(between(x = log_control_x, left = 3, right = 5)){
+    control_str_x <- "(em milhares)"
+    df$x <- df$x/1e3
+  }else if(log_control_x >= 6){
+    control_str_x <- "(em milhões)"
+    df$x <- df$x/1e6
+  }else{
+    control_str_x <- ""
+  }
+  
+  graph_info <- list(df = df,
+                     label_y = paste(control[['label_y']], control_str_y),
+                     label_x = paste(control[['label_x']], control_str_x),
+                     label_title = control[['label_title']])
+
   status <- NULL
-  return(list(value = plot,
+  return(list(value = graph_info,
               status = status))
 }

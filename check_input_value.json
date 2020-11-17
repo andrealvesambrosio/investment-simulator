@@ -1,7 +1,7 @@
 {
 "var" : {
 	"min" : [0],
-	"max" : [0.05], 
+	"max" : [0.1], 
 	"start" : [0.005],
 	"include_min" : ["FALSE"], 
 	"class" : ["numeric"],
@@ -19,7 +19,7 @@
                     
 "monthly_contribution" : {
 	"min" : [0], 
-	"max" : [10000], 
+	"max" : [20000], 
  	"start" : [1000],
 	"include_min" : ["TRUE"], 
 	"class" : ["numeric"],
@@ -28,7 +28,7 @@
                     
 "start" : {
 	"min" : [0], 
-	"max" : [100000], 
+	"max" : [250000], 
 	"include_min" : ["TRUE"], 
 	"start" : [0],
 	"class" : ["numeric"],
@@ -37,8 +37,8 @@
                     
 "total_money" : {
 	"min" : [0], 
-	"max" : [5000000], 
-	"start" : [100000],
+	"max" : [10000000], 
+	"start" : [500000],
 	"include_min" : ["FALSE"], 
 	"class" : ["numeric"],
 	"value" : ["Montante final precisa estar entre R$ 0,00 a R$ 5.000.000,00"]

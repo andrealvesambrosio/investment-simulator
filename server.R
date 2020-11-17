@@ -2,6 +2,7 @@
 library(dplyr)
 library(ggplot2)
 library(rjson)
+library(highcharter)
 
 # Source ----
 source("C:/Users/55169/Desktop/Dev/investment-simulator/R/theme_swd.R")
@@ -136,13 +137,29 @@ function(input, output, session) {
   })
 
   # Graph simulate function
-  output$graph <- renderPlot({
-    base_plot <- simulator(params = selectParams_graph(), 
+  output$graph <- renderHighchart({
+    info_plot <- simulator(params = selectParams_graph(), 
                            supress = TRUE, 
                            qtd_var = 2)[['value']]
     
+    # info_plot$df %>%
+    #   ggplot(aes(x = x, y = y)) +
+    #   geom_line() +
+    #   geom_point() +
+    #   labs(x = info_plot$label_x,
+    #        y = info_plot$label_y,
+    #        title = info_plot$label_title)
     
-    base_plot
-      #theme_swd()
+    info_plot$df %>%
+      hchart('line', hcaes(x = x, y = y), color = "blue") %>%
+      hc_exporting(enabled = TRUE, formAttributes = list(target = "_blank")) %>%
+      hc_plotOptions(column = list(
+        dataLabels = list(enabled = F),
+        #stacking = "normal",
+        enableMouseTracking = T )) %>%
+      hc_xAxis(title = list(text = info_plot$label_x)) %>%
+      hc_yAxis(title = list(text = info_plot$label_y)) %>%
+      hc_title(text = info_plot$label_title)
   })
+
 }
