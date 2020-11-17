@@ -1,7 +1,7 @@
 {
 "var" : {
 	"min" : [0],
-	"max" : [0.1], 
+	"max" : [0.05], 
 	"start" : [0.005],
 	"include_min" : ["FALSE"], 
 	"class" : ["numeric"],
@@ -10,11 +10,11 @@
                     
 "years" : {
 	"min" : [1], 
-	"max" : [60], 
+	"max" : [40], 
 	"start" : [5],
  	"include_min" : ["TRUE"], 
 	"class" : ["integer"],
-	"value" : ["Tempo (em anos) precisa estar entre 1 a 60"]
+	"value" : ["Tempo (em anos) precisa estar entre 1 a 40"]
 	},
                     
 "monthly_contribution" : {

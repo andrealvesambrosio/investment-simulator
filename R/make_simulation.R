@@ -66,6 +66,7 @@ make_simulation.graph <- function(params, info){
   df <- tibble::tibble(x = control[['axis_x']],
                        y = y) 
   
+  print(df)
   # Control the scale
   # Axis y
   log_control_y <- as.integer(log10(max(df$y)))
@@ -97,6 +98,7 @@ make_simulation.graph <- function(params, info){
                      label_title = control[['label_title']])
 
   status <- NULL
+  print(graph_info)
   return(list(value = graph_info,
               status = status))
 }

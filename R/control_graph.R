@@ -1,9 +1,11 @@
+input_rules <- fromJSON(file = "C:/Users/55169/Desktop/Dev/investment-simulator/check_input_value.json")
 control_graph <- function(params, info, ...){
   label_y = info[['label_y']]
   UseMethod("control_graph")
 }
 control_graph.years <- function(params, info){
-  axis_x = seq(5, 35, by = 1)
+  control <- input_rules$years 
+  axis_x = seq(control$min, control$max, by = 1)
   label_x = "Anos"
   label_title = paste(label_y, "vs", label_x)
   
@@ -14,7 +16,8 @@ control_graph.years <- function(params, info){
               axis_x = axis_x))
 }
 control_graph.var <- function(params, info){
-  axis_x = seq(0.0025, 0.025, by = 0.0015)*100
+  control <- input_rules$var 
+  axis_x = seq(0.001, control$max, by = 0.0015)*100
   label_x = "Rentabilidade ao mês (em %)"
   label_title = paste(label_y, "vs", label_x)
   
@@ -25,6 +28,7 @@ control_graph.var <- function(params, info){
               axis_x = axis_x))
 }
 control_graph.start <- function(params, info){
+  control <- input_rules$start 
   axis_x = c(100, 500, 1000,
              seq(1500, 5000, by = 500),
              seq(6000, 10000, by = 1000),
@@ -42,6 +46,8 @@ control_graph.start <- function(params, info){
               axis_x = axis_x))
 }
 control_graph.monthly_contribution <- function(params, info){
+  control <- input_rules$monthly_contribution 
+  aux <- c(control$min:control$max)
   axis_x = c(100, 500, 1000,
              seq(1500, 5000, by = 500),
              seq(6000, 10000, by = 1000))
