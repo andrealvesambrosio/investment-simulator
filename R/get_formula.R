@@ -12,9 +12,10 @@ get_formula <- function(params){
   # Total money expression
   if("total_money" %in% null_input){
     simulate_formula <- function(params){
-      params[['start']]*(1 + params[['var']])^(12*params[['years']]) + 
-        params[['monthly_contribution']]*(((1 + params[['var']])^(12*params[['years']])) - 1)/params[['var']]
-    }
+      x <- (1 + params[['var']])^(12*params[['years']])
+      
+      params[['start']]*x + (params[['monthly_contribution']]*(x - 1))/params[['var']]
+  }
     main_input <- "total_money"
     label_y <- "Montante final"
     
@@ -35,6 +36,16 @@ get_formula <- function(params){
     }
     main_input <- "start"
     label_y <- "Entrada"
+  }else if("years" %in% null_input){
+    simulate_formula <- function(params){
+      x <- params[['total_money']] + params[['monthly_contribution']]/params[['var']]
+      y <- params[['start']] + params[['monthly_contribution']]/params[['var']]
+      z <- 1 + params[['var']]
+      
+      return((1/12) * (log(x) - log(y)) / log(z))
+    }
+    main_input <- "years"
+    label_y <- "Anos"
   }
   
   # Check what simulating type we need + axis_x if needed

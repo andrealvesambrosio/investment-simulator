@@ -109,7 +109,7 @@ body <- dashboardBody(
             
             selectInput(inputId = "main_single", 
                         label = "Valor a ser simulado", 
-                        choices = c("Entrada", "Aporte mensal", "Montante final")),
+                        choices = c("Entrada", "Aporte mensal", "Montante final", "Anos")),
             textOutput("calculator_status"),
             tags$head(tags$style("#calculator_status{color: red;
                                  font-size: 20px;
@@ -134,12 +134,16 @@ body <- dashboardBody(
                              value = 100*input_rules[['var']][['start']],
                              step = 0.1),
                 
-                numericInput("years_single", 
-                             "Anos", 
-                             min = input_rules[['years']][['min']], 
-                             max = input_rules[['years']][['max']], 
-                             value = input_rules[['years']][['start']]),
                 
+                conditionalPanel(condition = "input.main_single != 'Anos'",
+                                 numericInput("years_single", 
+                                              "Anos", 
+                                              min = input_rules[['years']][['min']], 
+                                              max = input_rules[['years']][['max']], 
+                                              value = input_rules[['years']][['start']])
+                ),
+                
+
                 conditionalPanel(condition = "input.main_single != 'Entrada'",
                                  numericInput("start_single", 
                                               "Entrada", 

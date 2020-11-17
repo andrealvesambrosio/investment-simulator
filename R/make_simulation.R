@@ -17,6 +17,10 @@ make_simulation.single <- function(params, info){
                                   digits=2, 
                                   big.mark=".",
                                   decimal.mark = ","))
+  }else{
+    n_year <- as.integer(value)
+    n_month <- (as.numeric(value) - n_year) / (1/12)
+    value_str <- paste(n_year, "anos,", n_month, "meses.")
   }
   
   # Calculate investiment, profit, rentability
