@@ -1,8 +1,6 @@
-# Change decimal mark global R to ","
-# Try to add big mark "." global to R
 library(rjson)
 library(highcharter)
-input_rules <- fromJSON(file = "C:/Users/55169/Desktop/Dev/investment-simulator/check_input_value.json")
+input_rules <- rjson::fromJSON(file = "C:/Users/55169/Desktop/Dev/investment-simulator/check_input_value.json")
 
 sidebar <- dashboardSidebar(
   sidebarMenu(

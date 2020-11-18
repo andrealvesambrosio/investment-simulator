@@ -10,7 +10,7 @@ source("C:/Users/55169/Desktop/Dev/investment-simulator/R/control_graph.R")
 source("C:/Users/55169/Desktop/Dev/investment-simulator/R/make_simulation.R")
 source("C:/Users/55169/Desktop/Dev/investment-simulator/R/check_inputs.R")
 source("C:/Users/55169/Desktop/Dev/investment-simulator/R/get_formula.R")
-input_rules <- fromJSON(file = "C:/Users/55169/Desktop/Dev/investment-simulator/check_input_value.json")
+input_rules <- rjson::fromJSON(file = "C:/Users/55169/Desktop/Dev/investment-simulator/check_input_value.json")
 
 # Server ----
 function(input, output, session) {

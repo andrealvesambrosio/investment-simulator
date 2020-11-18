@@ -1,8 +1,8 @@
 interval <- function(obj, min, max, include_min){
   if(include_min == T){
-    obj >= min & obj <= max
+    obj >= min #& obj <= max
   }else{
-    obj > min & obj <= max
+    obj > min #& obj <= max
   }
 }
 
