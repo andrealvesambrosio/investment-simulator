@@ -19,7 +19,6 @@ sidebar <- dashboardSidebar(
 
 body <- dashboardBody(
   tabItems(
-    
     # Graph simulate ----
     tabItem(tabName = "graph_simulate",
             fluidRow(column(width = 4,

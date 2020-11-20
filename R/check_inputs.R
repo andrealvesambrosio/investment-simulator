@@ -1,4 +1,4 @@
-interval <- function(obj, min, max, include_min){
+interval <- function(obj, min, include_min){
   if(include_min == T){
     obj >= min #& obj <= max
   }else{
@@ -6,19 +6,11 @@ interval <- function(obj, min, max, include_min){
   }
 }
 
-is_missing <- function(obj){
-  if(is.null(obj)){
-    return(TRUE)
-  }else if(is.na(obj)){
-    return(TRUE)
-  }else{
-    return(FALSE)
-  }
-}
 
 check_inputs <- function(params, input_rules, supress = TRUE, qtd_null = 1){
   message("Entrando no check_inputs")
   
+  # Start values
   status <- "OK"
   value <- ""
   
@@ -50,7 +42,6 @@ check_inputs <- function(params, input_rules, supress = TRUE, qtd_null = 1){
                 value = value))
   }
   
-  
   # Input interval rules
   cond <- TRUE
   index <- 1
@@ -64,7 +55,6 @@ check_inputs <- function(params, input_rules, supress = TRUE, qtd_null = 1){
     }else{
       cond <- interval(params[[my_param]], 
                        min = my_rules[['min']],
-                       max = my_rules[['max']],
                        include_min = my_rules[['include_min']])
     }
   

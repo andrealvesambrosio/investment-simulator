@@ -57,10 +57,6 @@ get_formula <- function(params){
     axis_x = null_input[null_input != main_input]
   }
    
-  message("\n null_inputs:")
-  print(null_input)
-  
-  
   return(list(simulate_formula = simulate_formula,
               null_inputs = null_input,
               main_input = main_input,

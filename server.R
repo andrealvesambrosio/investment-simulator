@@ -28,16 +28,11 @@ function(input, output, session) {
     }else{
       message("check_inputs deu certo\n")
       info_to_simulate <- get_formula(params)
-      #message("info_to_simulate")###
-      #message(info_to_simulate)
       class(params) <- c(info_to_simulate[['simulate_type']],
                          info_to_simulate[['axis_x']])
       
       out <- make_simulation(params = params, 
                             info = info_to_simulate)
-      
-      #message("out")###
-      #message(out)
       
       if("single" %in% class(params)){
         if(supress == FALSE){
